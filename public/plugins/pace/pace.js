@@ -921,7 +921,7 @@
   };
 
   if (typeof define === 'function' && define.amd) {
-    define(['pace'], function() {
+    define(['bower_components/PACE/pace'], function() {
       return Pace;
     });
   } else if (typeof exports === 'object') {
