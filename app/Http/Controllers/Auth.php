@@ -41,10 +41,4 @@ class Auth
             return ['status' => false, 'message' => $e->getMessage()];
         }
     }
-
-    public function logOut()
-    {
-        unset($_SESSION['authUser']);
-        return header('Location:../../resources/views/auth/login.php');
-    }
 }
