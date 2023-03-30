@@ -1,5 +1,6 @@
 <?php
 require_once '../../../app/Http/Controllers/Auth.php';
+require_once '../../../app/Http/Middleware/isLogin.php';
 require_once '../../../config/app.php';
 $db = new Auth();
 ?>
@@ -44,7 +45,7 @@ $db = new Auth();
             if(isset($_POST['login_post'])) :
                 $result = $db->login(htmlspecialchars($_POST['username']), htmlspecialchars($_POST['password']));
                 if($result['status']) :
-                    header('Location:../../../index.php');
+                    header('Location: '.base_url);
                     exit;
                 else :
                     echo '<div class="alert alert-danger">'.$result["message"].'</div>';
