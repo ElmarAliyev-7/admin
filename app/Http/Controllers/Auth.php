@@ -19,13 +19,18 @@ class Auth
         }
     }
 
-    public function login($username, $password)
+    public function login($username, $password, $remember_me)
     {
         try {
             $stmt = $this->db->prepare('SELECT * FROM admins WHERE username=? AND password=?');
-            $stmt->execute([$username, md5($password)]);
+            if(isset($_COOKIE['authUser'])) :
+                $stmt->execute([$username, md5(openssl_decrypt($password, 'AES-128-ECB', 'my_remember_key'))]);
+            else :
+                $stmt->execute([$username, md5($password)]);
+            endif;
 
             if($stmt->rowCount() == 1) :
+                /* Get Auth User Data and Save to Session*/
                 $authUser = $stmt->fetch(PDO::FETCH_ASSOC);
                 $_SESSION['authUser'] = [
                     'id' => $authUser['id'],
@@ -33,6 +38,17 @@ class Auth
                     'fullname' => $authUser['fullname'],
                     'avatar' => $authUser['avatar'],
                 ];
+                /* Remember Me Cookie Data */
+                $authUser = [
+                    'username' => $username,
+                    'password' => openssl_encrypt($password, 'AES-128-ECB', 'my_remember_key')
+                ];
+                if(!empty($remember_me) and empty($_COOKIE['authUser'])) :
+                    setcookie('authUser', json_encode($authUser), strtotime('+30 day'), '/');
+                elseif(empty($remember_me)) :
+                    setcookie('authUser', json_encode($authUser), strtotime('-30 day'), '/');
+                endif;
+
                 return ['status' => true, 'message' => 'Login Successfully'];
             else :
                 return ['status' => false, 'message' => 'Username or password incorrect'];

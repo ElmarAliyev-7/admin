@@ -13,15 +13,15 @@ $db = new Auth();
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
-    <link rel="stylesheet" href="../../../public/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?=base_url;?>/public/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="../../../public/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="<?=base_url;?>/public/bower_components/font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="../../../public/bower_components/Ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="<?=base_url;?>/public/bower_components/Ionicons/css/ionicons.min.css">
     <!-- Theme style -->
-    <link rel="stylesheet" href="../../../public/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="<?=base_url;?>/public/dist/css/AdminLTE.min.css">
     <!-- iCheck -->
-    <link rel="stylesheet" href="../../../public/plugins/iCheck/square/blue.css">
+    <link rel="stylesheet" href="<?=base_url;?>/public/plugins/iCheck/square/blue.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,8 +42,16 @@ $db = new Auth();
     <div class="login-box-body">
         <p class="login-box-msg">Sign in to start your session</p>
         <?php
+            $remember_me = 0;
+            if(!empty($_COOKIE['authUser'])) :
+                $remember_me = 1;
+                $login = json_decode($_COOKIE['authUser']);
+            endif;
+
             if(isset($_POST['login_post'])) :
-                $result = $db->login(htmlspecialchars($_POST['username']), htmlspecialchars($_POST['password']));
+                $post_remember_me = isset($_POST['remember_me']) ? $_POST['remember_me'] : null;
+                $result = $db->login(htmlspecialchars($_POST['username']), htmlspecialchars($_POST['password']),
+                    $post_remember_me);
                 if($result['status']) :
                     header('Location: '.base_url);
                     exit;
@@ -54,18 +62,23 @@ $db = new Auth();
         ?>
         <form action="" method="post">
             <div class="form-group has-feedback">
-                <input type="text" class="form-control" placeholder="Username" name="username">
+                <input type="text" class="form-control" name="username"
+                    <?php if($remember_me) : echo 'value="'.$login->username.'"';
+                        else : echo 'placeholder="Username"'; endif; ?> />
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="Password" name="password">
+                <input type="password" class="form-control" name="password"
+                    <?php if($remember_me) : echo 'value="'.$login->password.'"';
+                        else : echo 'placeholder="Password"'; endif; ?> />
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
             <div class="row">
                 <div class="col-xs-8">
                     <div class="checkbox icheck">
                         <label>
-                            <input type="checkbox"> Remember Me
+                            <input type="checkbox" <?php if($remember_me) : echo 'checked'; endif;?> name="remember_me"  />
+                            Remember Me
                         </label>
                     </div>
                 </div>
@@ -82,11 +95,11 @@ $db = new Auth();
 <!-- /.login-box -->
 
 <!-- jQuery 3 -->
-<script src="../../../public/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="<?=base_url;?>/public/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="../../../public/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="<?=base_url;?>/public/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- iCheck -->
-<script src="../../../public/plugins/iCheck/icheck.min.js"></script>
+<script src="<?=base_url;?>/public/plugins/iCheck/icheck.min.js"></script>
 <script>
     $(function () {
         $('input').iCheck({
