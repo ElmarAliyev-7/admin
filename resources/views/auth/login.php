@@ -44,7 +44,7 @@ $db = new Auth();
             if(isset($_POST['login_post'])) :
                 $result = $db->login(htmlspecialchars($_POST['username']), htmlspecialchars($_POST['password']));
                 if($result['status']) :
-                    header('Location:'.base_url);
+                    header('Location:../../../index.php');
                     exit;
                 else :
                     echo '<div class="alert alert-danger">'.$result["message"].'</div>';
